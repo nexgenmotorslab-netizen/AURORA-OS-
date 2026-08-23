@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURORA OS - Complete</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif
+        }
+
+        body {
+            background: #f4f7fb;
+            display: flex;
+            height: 100vh
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #0f172a;
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column
+        }
+
+        .sidebar h1 {
+            color: #38bdf8;
+            font-size: 22px;
+            margin-bottom: 30px
+        }
+
+        .sidebar a {
+            color: #94a3b8;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            display: block;
+            cursor: pointer
+        }
+
+        .sidebar a.active,
+        .sidebar a:hover {
+            background: #1e293b;
+            color: #fff
+        }
+
+        .main {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px
+        }
+
+        .stat {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, .05)
+        }
+
+        .stat h3 {
+            color: #64748b;
+            font-size: 12px
+        }
+
+        .stat p {
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 8px
+        }
+
+        .card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
+            margin-bottom: 20px
+        }
+
+        input,
+        button {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            width: 100%;
+            margin-top: 10px
+        }
+
+        button {
+            background: #0f172a;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-weight: bold
+        }
+
+        button:hover {
+            background: #38bdf8;
+            color: #0f172a
+        }
+
+        .btn-withdraw {
+            background: #ef4444
+        }
+
+        .btn-withdraw:hover {
+            background: #dc2626;
+            color: #fff
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px
+        }
+
+        th {
+            background: #f8fafc
+        }
+
+        .badge {
+            background: #dcfce7;
+            color: #166534;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 12px
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <h1>AURORA OS</h1>
+        <a class="active" onclick="showTab('dashboard',this)">📊 Dashboard</a>
+        <a onclick="showTab('collect',this)">💰 Collect</a>
+        <a onclick="showTab('withdraw',this)">💸 Withdraw</a>
+        <a onclick="showTab('members',this)">👥 Members</a>
+        <a onclick="showTab('add',this)">➕ Add Member</a>
+        <a onclick="logout()" style="margin-top:auto;color:#f87171">🚪 Logout</a>
+    </div>
+    <div class="main">
+        <h2 id="tabTitle" style="margin-bottom:20px">Dashboard</h2>
+
+        <div id="dashboard" class="tab">
+            <div class="stats">
+                <div class="stat">
+                    <h3>Members</h3>
+                    <p id="totalMembers">0</p>
+                </div>
+                <div class="stat">
+                    <h3>Total Saved</h3>
+                    <p id="totalSaved">GHC 0</p>
+                </div>
+                <div class="stat">
+                    <h3>Potential Commission</h3>
+                    <p id="totalComm" style="color:#0ea5e9">GHC 0</p>
+                </div>
+                <div class="stat">
+                    <h3>Days</h3>
+                    <p id="daysInfo">31</p>
+                </div>
+            </div>
+            <div class="card">
+                <h3>System Ready - Susu Logic: 31 days collection = 30 payout + 1 commission</h3>
+                <p style="color:#64748b;margin-top:10px">February always 31 days = extra profit for you</p>
+            </div>
+        </div>
+
+        <div id="collect" class="tab" style="display:none">
+            <div class="card" style="max-width:450px">
+                <h3>💰 Collect Susu</h3><input id="cId" type="number" placeholder="Member ID"><input id="cAmt"
+                    type="number" placeholder="Amount"><button onclick="doCollect()">Confirm Collection</button>
+                <p id="cMsg"></p>
+            </div>
+        </div>
+
+        <div id="withdraw" class="tab" style="display:none">
+            <div class="card" style="max-width:450px">
+                <h3>💸 Withdraw / Payout</h3><input id="wId" type="number" placeholder="Member ID to Payout"><button
+                    class="btn-withdraw" onclick="doWithdraw()">PAYOUT MEMBER</button>
+                <p id="wMsg"></p>
+                <p style="margin-top:15px;color:#64748b;font-size:13px">Note: Member must have completed 31 days. Your
+                    commission = 1 day amount</p>
+            </div>
+        </div>
+
+        <div id="members" class="tab" style="display:none">
+            <div class="card">
+                <h3>Members</h3><button onclick="loadMembers()" style="width:auto">🔄 Refresh</button>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Daily</th>
+                            <th>Saved</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="add" class="tab" style="display:none">
+            <div class="card" style="max-width:450px">
+                <h3>➕ Add Member</h3><input id="nName" placeholder="Full Name"><input id="nPhone"
+                    placeholder="Phone"><input id="nAmt" type="number" placeholder="Daily Amount"><button
+                    onclick="addMember()">Add Member</button>
+                <p id="aMsg"></p>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        const API = "http://127.0.0.1:8000"; const collectorId = 1;
+        if (!localStorage.getItem('token')) window.location.href = 'login.html';
+        function showTab(t, el) { document.querySelectorAll('.tab').forEach(x => x.style.display = 'none'); document.getElementById(t).style.display = 'block'; document.getElementById('tabTitle').innerText = t.toUpperCase(); document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active')); if (el) el.classList.add('active'); if (t !== 'add') loadMembers() }
+        async function loadMembers() {
+            const r = await fetch(`${API}/api/members`); const members = await r.json();
+            let total = 0, comm = 0, html = '';
+            members.forEach(m => { total += m.total_saved; comm += m.daily_amount; html += `<tr><td>${m.id}</td><td>${m.full_name}</td><td>${m.phone}</td><td>${m.daily_amount}</td><td><span class="badge">GHC ${m.total_saved}</span></td><td><button style="padding:5px 10px;font-size:12px" onclick="quickCollect(${m.id},${m.daily_amount})">Collect</button></td></tr>` });
+            document.getElementById('mTable').innerHTML = html || '<tr><td colspan=6>No members</td></tr>';
+            document.getElementById('totalMembers').innerText = members.length;
+            document.getElementById('totalSaved').innerText = 'GHC ' + total;
+            document.getElementById('totalComm').innerText = 'GHC ' + comm;
+        }
+        async function addMember() {
+            const name = document.getElementById('nName').value, phone = document.getElementById('nPhone').value, amt = document.getElementById('nAmt').value;
+            const r = await fetch(`${API}/api/members/add?collector_id=${collectorId}&full_name=${encodeURIComponent(name)}&phone=${phone}&daily_amount=${amt}`, { method: 'POST' });
+            const d = await r.json(); document.getElementById('aMsg').innerText = r.ok ? `✅ Added ID ${d.id}` : d.detail; if (r.ok) loadMembers();
+        }
+        async function doCollect() {
+            const id = document.getElementById('cId').value, amt = document.getElementById('cAmt').value;
+            const r = await fetch(`${API}/api/collect?collector_id=${collectorId}&member_id=${id}&amount=${amt}`, { method: 'POST' });
+            const d = await r.json(); document.getElementById('cMsg').innerText = r.ok ? `✅ ${d.message} New total: ${d.new_total}` : d.detail; loadMembers();
+        }
+        async function quickCollect(id, amt) { document.getElementById('cId').value = id; document.getElementById('cAmt').value = amt; doCollect(); }
+        async function doWithdraw() {
+            const id = document.getElementById('wId').value;
+            if (!id) return;
+            const r = await fetch(`${API}/api/withdraw?member_id=${id}`, { method: 'POST' });
+            const d = await r.json();
+            if (r.ok) { document.getElementById('wMsg').innerHTML = `<span style="color:green">✅ ${d.message}<br>Commission: GHC ${d.commission}<br><b>${d.profit}</b></span>` }
+            else { document.getElementById('wMsg').innerHTML = `<span style="color:red">❌ ${d.detail}</span>` }
+            loadMembers();
+        }
+        function logout() { localStorage.clear(); window.location.href = 'login.html' }
+        loadMembers();
+    </script>
+</body>
+
+</html>

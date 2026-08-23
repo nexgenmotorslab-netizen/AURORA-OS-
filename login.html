@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AURORA Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #f0f2f5;
+            margin: 0
+        }
+
+        .box {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 350px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1)
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #0f172a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-weight: bold;
+            cursor: pointer
+        }
+
+        button:hover {
+            background: #1e293b
+        }
+
+        #msg {
+            text-align: center;
+            color: red;
+            margin-top: 10px
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <h2>NEXGEN SUSU OS - Login</h2>
+        <input id="username" placeholder="Username e.g. admin">
+        <input id="password" type="password" placeholder="Password">
+        <button onclick="doLogin()">LOGIN</button>
+        <div id="msg"></div>
+        <p style="text-align:center;font-size:12px;margin-top:15px">First time? Username: admin / Pass: admin123</p>
+    </div>
+
+    <script>
+        async function doLogin() {
+            const u = document.getElementById('username').value
+            const p = document.getElementById('password').value
+            document.getElementById('msg').innerText = "Checking..."
+
+            try {
+                const res = await fetch('http://127.0.0.1:8000/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: u, password: p })
+                })
+                const data = await res.json()
+                if (res.ok) {
+                    localStorage.setItem('token', data.access_token)
+                    localStorage.setItem('user', data.username)
+                    window.location.href = 'index.html'
+                } else {
+                    document.getElementById('msg').innerText = data.detail || "Login failed"
+                }
+            } catch (e) {
+                document.getElementById('msg').innerText = "Backend not running! Start uvicorn"
+            }
+        }
+    </script>
+</body>
+
+</html>
